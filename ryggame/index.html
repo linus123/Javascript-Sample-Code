@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+	<script>
+		$(document).ready(function(){
+			module("GuessEngine tests");
+
+			test("getRandomNumberLessThan10 should not return 0", function() {
+				var ge = new GuessEngine();
+
+				var n = 0;
+
+				for(var i = 0; i < 20; i++) {
+					n = ge.getRandomNumberLessThan10();
+					ok(n != 0, "guess is not 0");
+				}
+
+			});
+			
+			test("getNextGuess should return valid first guess", function() {
+				var ge = new GuessEngine();
+				var g = ge.getNextGuess();
+
+			});
+
+			test("isNumberInArray should work for a full array on strings", function() {
+				var ge = new GuessEngine();
+
+				ok(ge.isNumberInArray([1,2,3,4], "1"), "number is not in array");
+				ok(!ge.isNumberInArray([1,2,3,4], "5"), "number is not in array");
+			});
+
+			test("isNumberInArray should work for a full array on numbers", function() {
+				var ge = new GuessEngine();
+
+				ok(ge.isNumberInArray([1,2,3,4], 1), "number is not in array");
+				ok(!ge.isNumberInArray([1,2,3,4], 5), "number is not in array");
+			});
+
+			test("isNumberInArray should work for a partial array", function() {
+				var ge = new GuessEngine();
+
+				ok(ge.isNumberInArray([1,2,,], "1"), "number is not in array");
+				ok(!ge.isNumberInArray([], "5"), "number is not in array");
+			});
+
+			test("setColorOnGuess should add red numbers to the array", function() {
+				var ge = new GuessEngine();
+
+				ge.setColorOnGuess([1,2,3,4], "rrgg");
+
+				ok(ge.isNumberInReds(1), "has added the red number to the red array " + ge.redNumbers);
+				ok(ge.isNumberInReds(2), "has added the red number to the red array " + ge.redNumbers);
+				ok(!ge.isNumberInReds(3), "has NOT added a non red number to the red array " + ge.redNumbers);
+				ok(!ge.isNumberInReds(4), "has NOT added a non red number to the red array " + ge.redNumbers);
+
+				console.log(ge.redNumbers);
+			});
+
+			test("getNextGuess should always return the number in place once set green", function() {
+				var ge = new GuessEngine();
+
+				ge.setColorOnGuess([1, 2, 3, 4], "rrgg");
+
+				var ng = ge.getNextGuess();
+				valideGreenGuess(ng);
+
+				ng = ge.getNextGuess();
+				valideGreenGuess(ng);
+
+				ng = ge.getNextGuess();
+				valideGreenGuess(ng);
+				
+				ng = ge.getNextGuess();
+				valideGreenGuess(ng);
+
+				function valideGreenGuess(ng) {
+					ok(ng.indexOf("3") == 2, "should have 3 as the third number guess");
+					ok(ng.indexOf("4") == 3, "should have 4 as the fourth number guess");
+				}
+
+			});
+
+			test("isNumberAlreadyGreen should return true for all numbers already in the array", function() {
+				var ge = new GuessEngine();
+
+				var nip1 = new NumberIndexPair(1, 0);
+				var nip2 = new NumberIndexPair(2, 1);
+
+				ge.greenNumbers.push(nip1);
+				ge.greenNumbers.push(nip2);
+
+				ok(ge.isNumberAlreadyGreen(1), "should already be green on first number");
+				ok(ge.isNumberAlreadyGreen(2), "should already be green on second number");
+				ok(!ge.isNumberAlreadyGreen(3), "should NOT be green");
+				ok(!ge.isNumberAlreadyGreen(4), "should NOT be green");
+			});
+
+			test("getGuessArrayWithGreens should return a guess array with the green numbers populated", function() {
+				var ge = new GuessEngine();
+
+				var blankGuess = ge.getGuessArrayWithGreens();
+
+				for(var i = 0; i < 4; i++) {
+					ok(!blankGuess[i], "number should be empty");
+				}
+
+				var nip1 = new NumberIndexPair(1, 0);
+				var nip2 = new NumberIndexPair(2, 1);
+
+				ge.greenNumbers.push(nip1);
+				ge.greenNumbers.push(nip2);
+				
+				var oneGreenGuess = ge.getGuessArrayWithGreens();
+
+				equal(oneGreenGuess[0], 1, "first number should be one");
+				equal(oneGreenGuess[1], 2, "second number should be two");
+				ok(!oneGreenGuess[2], "thrid number should be blank");
+				ok(!oneGreenGuess[3], "fourth number should be blank");
+			});
+
+			test("getNextGuess should never return a red number", function() {
+				var ge = new GuessEngine();
+				ge.setColorOnGuess([5, 6, 7, 8], "rryy");
+
+				var g1 = ge.getNextGuess();
+				testGuessForInvalidNumbers(g1);
+
+				g1 = ge.getNextGuess();
+				testGuessForInvalidNumbers(g1);
+
+				g1 = ge.getNextGuess();
+				testGuessForInvalidNumbers(g1);
+
+				g1 = ge.getNextGuess();
+				testGuessForInvalidNumbers(g1);
+
+				function testGuessForInvalidNumbers(guess) {
+					var exp = new RegExp("(\\w)\\1+");
+					var isValid = !exp.test(guess);
+					ok(isValid, "this guess did not have duplicate numbers");
+
+					ok(guess.indexOf("5") < 0, "should not return 1 as a guess");
+					ok(guess.indexOf("6") < 0, "should not return 2 as a guess");
+				}
+			});
+		});
+	</script>
+
+</head>
+<body>
+	<h1 id="qunit-header">QUnit example</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>
+
