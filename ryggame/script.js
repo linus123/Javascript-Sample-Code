@@ -59,6 +59,11 @@ function GuessEngine() {
 	this.setColorOnGuess = function(guess, colors) {
 		for(var i = 0; i < colors.length; i++) {
 			var current = colors.charAt(i);
+
+			if (current == GuessEngine.green) {
+				var pair = new NumberIndexPair(guess[i], i);
+				this.greenNumbers.push(pair);
+			}
 			
 			if (current == GuessEngine.red) {
 				this.redNumbers.push(guess[i]);
