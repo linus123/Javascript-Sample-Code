@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <style>
+        .reveal *{
+            display: none;
+        }
+
+        .reveal *.handle {
+            display: block;
+        }
+    </style>
+    <script type="text/javascript">
+        window.onload = function() {
+            var revealElements = document.getElementsByClassName("reveal");
+
+            for (var i = 0; i < revealElements.length; i++) {
+                var revealElement = revealElements[i];
+
+                var h1Title = revealElement.getElementsByClassName("handle")[0];
+
+                h1Title.onclick = function() {
+
+                    if (revealElement.className == "reveal") revealElement.className = "revealed";
+                    else if (revealElement.className == "revealed") revealElement.className = "reveal";
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="reveal">
+        <h1 class="handle">Click Here to Reveal Hidden Text</h1>
+        <p>This paragraph is hidden. It appears when you click on the title.</p>
+    </div>
+</body>
+</html>
